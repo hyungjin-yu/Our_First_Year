@@ -1,0 +1,30 @@
+[
+  {
+    "id": "1",
+    "date": "2025-02-14",
+    "title": "우리의 첫 만남",
+    "description": "떨리던 그날의 공기가 아직도 생생해. 네가 입었던 하얀 원피스가 참 예뻤어.",
+    "imageSrc": "/images/sample1.jpg"
+  },
+  {
+    "id": "2",
+    "date": "2025-05-20",
+    "title": "첫 번째 여행",
+    "description": "밤바다 보며 나누던 이야기들. 그때 우리 정말 많이 웃었지?",
+    "imageSrc": "/images/sample2.jpg"
+  },
+  {
+    "id": "3",
+    "date": "2025-08-10",
+    "title": "무더운 여름날",
+    "description": "함께 나눠 먹던 팥빙수와 너의 시원한 미소.",
+    "imageSrc": "/images/sample3.jpg"
+  },
+  {
+    "id": "4",
+    "date": "2025-12-25",
+    "title": "함께 맞이한 크리스마스",
+    "description": "트리 앞에서 찍은 사진, 아직 내 배경화면이야.",
+    "imageSrc": "/images/sample4.jpg"
+  }
+]

@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Our Anniversary</string>
+    <string name="title_activity_main">Our Anniversary</string>
+    <string name="package_name">com.our.anniversary</string>
+    <string name="custom_url_scheme">com.our.anniversary</string>
+</resources>

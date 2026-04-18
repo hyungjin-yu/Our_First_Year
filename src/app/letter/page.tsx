@@ -5,36 +5,51 @@ import { useEffect, useState } from "react";
 import { TopAppBar } from "@/components/top-app-bar";
 import { BottomNav } from "@/components/bottom-nav";
 
-// 이 컨텐츠는 추후 Supabase에서 불러올 수 있습니다.
-const MOCK_LETTER_CONTENT = `사랑하는 너에게,
-
-우리가 함께한 지 벌써 이렇게나 많은 시간이 흘렀네.
-처음 만났던 날의 그 설렘이 아직도 생생한데,
-어느새 너는 내 일상의 가장 큰 부분이 되어있어.
-
-매일 똑같은 일상도 너와 함께하면 특별한 기록이 돼.
-때로는 다투기도 하고, 때로는 눈물 흘릴 때도 있었지만,
-그 모든 순간들이 우리를 더 단단하게 만들어준 것 같아.
-
-앞으로도 지금처럼, 아니 지금보다 더
-서로를 아끼고 사랑하며 예쁜 추억 많이 만들어가자.
-
-항상 내 곁에 있어줘서 고마워.
-사랑해.`;
+import { createClient } from "@/utils/supabase/client";
+import { useAuth } from "@/components/auth-provider";
+import { useRouter } from "next/navigation";
 
 export default function LetterPage() {
     const [displayedText, setDisplayedText] = useState("");
     const [startTyping, setStartTyping] = useState(false);
+    const [letterContent, setLetterContent] = useState("");
+    const { user, loading } = useAuth();
+    const router = useRouter();
+    const supabase = createClient();
 
     useEffect(() => {
-        if (startTyping) {
+        if (!loading && !user) {
+            router.push("/login");
+            return;
+        }
+
+        const fetchLetter = async () => {
+            if (!user) return;
+            const { data } = await supabase
+                .from("letters")
+                .select("content")
+                .eq("user_id", user.id)
+                .order("updated_at", { ascending: false })
+                .limit(1)
+                .single();
+
+            if (data?.content) {
+                setLetterContent(data.content);
+            } else {
+                setLetterContent("아직 기록된 편지가 없습니다.\n기록하기 페이지에서 편지를 남겨보세요.");
+            }
+        };
+
+        fetchLetter();
+    }, [user, loading, router, supabase]);
+
+    useEffect(() => {
+        if (startTyping && letterContent) {
             let i = 0;
             setDisplayedText(""); // Reset
             const timer = setInterval(() => {
-                if (i < MOCK_LETTER_CONTENT.length) {
-                    // 글자 누락(React state batching/strict mode 등)을 방지하기 위해 
-                    // prev에 더하는 방식 대신 원본 문자열에서 i까지 잘라오는 방식(substring)을 사용합니다.
-                    setDisplayedText(MOCK_LETTER_CONTENT.substring(0, i + 1));
+                if (i < letterContent.length) {
+                    setDisplayedText(letterContent.substring(0, i + 1));
                     i++;
                 } else {
                     clearInterval(timer);
@@ -42,7 +57,7 @@ export default function LetterPage() {
             }, 60); // 타이핑 속도
             return () => clearInterval(timer);
         }
-    }, [startTyping]);
+    }, [startTyping, letterContent]);
 
     return (
         <>
@@ -68,7 +83,7 @@ export default function LetterPage() {
 
                     <div className="font-headline text-lg md:text-xl leading-loose whitespace-pre-line min-h-[400px] text-on-surface mt-4">
                         {displayedText}
-                        {startTyping && displayedText.length < MOCK_LETTER_CONTENT.length && (
+                        {startTyping && displayedText.length < letterContent.length && (
                             <span className="animate-pulse text-primary-dim ml-1">|</span>
                         )}
                     </div>

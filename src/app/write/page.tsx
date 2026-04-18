@@ -22,15 +22,41 @@ export default function WritePage() {
     const formRef = useRef<HTMLFormElement>(null);
 
     useEffect(() => {
-        // [UI 테스트 임시 설정] 로그인이 안되어 있어도 디자인을 볼 수 있도록 리다이렉트 해제
-        // if (!loading && !user) {
-        //     router.push("/login");
-        //     return;
-        // }
+        // [UI 테스트 임시 설정 해제] 로그인 검증 다시 활성화
+        if (!loading && !user) {
+            router.push("/login");
+            return;
+        }
 
-        setCurrentLetter("사랑하는 우리에게... (서버 연동 전)");
-        setPhotoCount(5);
-    }, [user, loading, router]);
+        const fetchInitialData = async () => {
+            if (!user) return;
+            
+            // 편지 가져오기
+            const { data: letterData } = await supabase
+                .from("letters")
+                .select("content")
+                .eq("user_id", user.id)
+                .order("updated_at", { ascending: false })
+                .limit(1)
+                .single();
+                
+            if (letterData) {
+                setCurrentLetter(letterData.content);
+            } else {
+                setCurrentLetter("사랑하는 우리에게...\n여기에 편지를 남겨보세요.");
+            }
+
+            // 사진 개수 가져오기
+            const { count } = await supabase
+                .from("memories")
+                .select("*", { count: "exact", head: true })
+                .eq("user_id", user.id);
+                
+            setPhotoCount(count || 0);
+        };
+
+        fetchInitialData();
+    }, [user, loading, router, supabase]);
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -46,6 +72,9 @@ export default function WritePage() {
 
         const formData = new FormData(e.currentTarget);
         const file = formData.get("file") as File;
+        const date = formData.get("date") as string;
+        const title = formData.get("title") as string;
+        const description = formData.get("description") as string;
 
         try {
             let imagePath = "";
@@ -57,8 +86,18 @@ export default function WritePage() {
                 return;
             }
 
+            const { error } = await supabase.from("memories").insert({
+                user_id: user.id,
+                memory_date: date,
+                title: title,
+                description: description,
+                image_url: imagePath,
+            });
+
+            if (error) throw error;
+
             console.log("Memory saved:", imagePath);
-            setMessage("소중한 추억이 기록되었습니다! 🎉 (서버 연동 전)");
+            setMessage("소중한 추억이 기록되었습니다! 🎉");
             setPhotoCount((prev) => prev + 1);
             formRef.current?.reset();
         } catch (error) {
@@ -71,17 +110,30 @@ export default function WritePage() {
 
     const handleLetterUpdate = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+        if (!user) return;
+        
         const formData = new FormData(e.currentTarget);
         const content = formData.get("content") as string;
 
-        setCurrentLetter(content);
-        alert("편지가 수정되었습니다. (서버 연동 전)");
+        // 기존 편지 삭제 후 새로 추가 (간단한 우회 방법)
+        await supabase.from("letters").delete().eq("user_id", user.id);
+        const { error } = await supabase.from("letters").insert({
+            user_id: user.id,
+            content: content
+        });
+
+        if (error) {
+            alert("편지 저장 중 오류가 발생했습니다.");
+            console.error(error);
+        } else {
+            setCurrentLetter(content);
+            alert("편지가 성공적으로 저장되었습니다! 💌");
+        }
     };
 
-    // [UI 테스트 임시 설정] 로딩/유저 검증 화면 무시
-    // if (loading || !user) {
-    //     return <div className="min-h-screen flex items-center justify-center bg-surface font-body text-on-surface">불러오는 중...</div>;
-    // }
+    if (loading || !user) {
+        return <div className="min-h-screen flex items-center justify-center bg-surface font-body text-on-surface">불러오는 중...</div>;
+    }
 
     return (
         <>

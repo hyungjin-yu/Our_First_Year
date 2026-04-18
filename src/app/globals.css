@@ -1,8 +1,17 @@
 @import "tailwindcss";
 
-:root {
+html {
   --background: #fdf8f5;
   --foreground: #34322f;
+  
+  /* 커스텀 테마 변수 (기본값: 로맨틱 핑크 / 크림 베이지) */
+  --app-primary: #84514f;
+  --app-primary-container: color-mix(in srgb, var(--app-primary) 30%, #ffffff);
+  --app-primary-dim: color-mix(in srgb, var(--app-primary) 85%, #000000);
+
+  --app-surface: #fdf8f5;
+  --app-surface-container: color-mix(in srgb, var(--app-surface) 96%, #000000);
+  --app-surface-container-low: color-mix(in srgb, var(--app-surface) 98%, #000000);
 }
 
 @theme inline {
@@ -13,13 +22,13 @@
   --color-surface-container-lowest: #ffffff;
   --color-error-container: #fd795a;
   --color-on-primary-fixed-variant: #6d3e3c;
-  --color-primary-fixed: #fbb9b5;
+  --color-primary-fixed: var(--app-primary-container);
   --color-on-tertiary-container: #624a20;
   --color-inverse-surface: #0f0e0d;
-  --color-on-primary: #fff7f6;
+  --color-on-primary: #ffffff;
   --color-on-surface-variant: #615f5b;
   --color-on-secondary-container: #644f00;
-  --color-surface-container-low: #f8f3ef;
+  --color-surface-container-low: var(--app-surface-container-low);
   --color-tertiary-dim: #674f25;
   --color-secondary-dim: #665100;
   --color-secondary: #745c00;
@@ -27,8 +36,8 @@
   --color-error: #a73b21;
   --color-on-error-container: #6e1400;
   --color-on-secondary-fixed: #4e3d00;
-  --color-inverse-primary: #fbb9b5;
-  --color-primary-dim: #764643;
+  --color-inverse-primary: var(--app-primary-container);
+  --color-primary-dim: var(--app-primary-dim);
   --color-error-dim: #791903;
   --color-outline: #7d7a76;
   --color-tertiary-container: #fbd8a1;
@@ -36,27 +45,27 @@
   --color-surface-variant: #e7e2dd;
   --color-tertiary-fixed-dim: #ecca94;
   --color-surface-container-highest: #e7e2dd;
-  --color-surface-bright: #fdf8f5;
+  --color-surface-bright: var(--app-surface);
   --color-on-surface: #34322f;
   --color-on-error: #fff7f6;
-  --color-background: #fdf8f5;
+  --color-background: var(--app-surface);
   --color-on-primary-fixed: #4b2220;
   --color-on-tertiary-fixed: #4e380f;
-  --color-surface-tint: #84514f;
+  --color-surface-tint: var(--app-primary);
   --color-on-background: #34322f;
   --color-tertiary: #755b2f;
-  --color-on-primary-container: #623533;
-  --color-surface: #fdf8f5;
-  --color-primary-fixed-dim: #ecaca7;
+  --color-on-primary-container: #4a2928;
+  --color-surface: var(--app-surface);
+  --color-primary-fixed-dim: var(--app-primary-dim);
   --color-on-secondary: #fff8ef;
-  --color-surface-container: #f2ede9;
+  --color-surface-container: var(--app-surface-container);
   --color-inverse-on-surface: #a09c9a;
   --color-on-secondary-fixed-variant: #705900;
-  --color-primary-container: #fbb9b5;
+  --color-primary-container: var(--app-primary-container);
   --color-secondary-fixed: #ffe088;
   --color-tertiary-fixed: #fbd8a1;
   --color-outline-variant: #b5b1ad;
-  --color-primary: #84514f;
+  --color-primary: var(--app-primary);
 
   --radius-DEFAULT: 1rem;
   --radius-lg: 2rem;
@@ -68,15 +77,8 @@
   --font-label: "Plus Jakarta Sans", sans-serif;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #34322f;
-    --foreground: #fdf8f5;
-  }
-}
-
 body {
-  background: var(--background);
+  background: var(--app-surface);
   color: var(--foreground);
 }
 

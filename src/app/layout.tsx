@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Noto_Serif, Plus_Jakarta_Sans } from "next/font/google";
 import { AuthProvider } from "@/components/auth-provider";
 import { ProfileManager } from "@/components/profile-manager";
+import { ThemeProvider } from "@/components/theme-provider";
 import "./globals.css";
 
 const notoSerif = Noto_Serif({
@@ -50,11 +51,13 @@ export default function RootLayout({
         <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
       </head>
       <body className="bg-surface text-on-surface font-body min-h-screen antialiased pb-32">
-        <AuthProvider>
-          <ProfileManager>
-            {children}
-          </ProfileManager>
-        </AuthProvider>
+        <ThemeProvider>
+          <AuthProvider>
+            <ProfileManager>
+              {children}
+            </ProfileManager>
+          </AuthProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

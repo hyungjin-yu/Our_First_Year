@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, Suspense } from "react";
+import { useEffect, useState, useMemo, Suspense } from "react";
 import { TopAppBar } from "@/components/top-app-bar";
 import { BottomNav } from "@/components/bottom-nav";
 import { useAuth } from "@/components/auth-provider";
@@ -8,10 +8,12 @@ import { createClient } from "@/utils/supabase/client";
 import { useRouter, useSearchParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
+import { LoadingScreen } from "@/components/loading-screen";
+import { formatFullDate } from "@/lib/utils";
 
 function MemoryDetailContent() {
     const { user, loading } = useAuth();
-    const supabase = createClient();
+    const supabase = useMemo(() => createClient(), []);
     const router = useRouter();
     const searchParams = useSearchParams();
     const id = searchParams.get("id");
@@ -43,7 +45,7 @@ function MemoryDetailContent() {
         };
 
         fetchMemory();
-    }, [user, loading, supabase, router, id]);
+    }, [user, loading, router, id]);
 
     const handleDelete = async () => {
         if (!id) return;
@@ -59,13 +61,8 @@ function MemoryDetailContent() {
         }
     };
 
-    const formatDate = (dateString: string) => {
-        const date = new Date(dateString);
-        return `${date.getFullYear()}년 ${date.getMonth() + 1}월 ${date.getDate()}일`;
-    };
-
     if (loading || !user || !memory) {
-        return <div className="min-h-screen flex items-center justify-center bg-surface text-on-surface">불러오는 중...</div>;
+        return <LoadingScreen />;
     }
 
     return (
@@ -75,7 +72,7 @@ function MemoryDetailContent() {
                     {/* Header */}
                     <div className="flex justify-between items-start mb-6">
                         <div>
-                            <p className="font-label text-sm text-primary-dim mb-1">{formatDate(memory.memory_date)}</p>
+                            <p className="font-label text-sm text-primary-dim mb-1">{formatFullDate(memory.memory_date)}</p>
                             <h1 className="font-headline text-3xl md:text-4xl font-bold text-primary">{memory.title}</h1>
                         </div>
                         <button 
@@ -123,15 +120,15 @@ function MemoryDetailContent() {
                                 <h3 className="font-headline text-lg font-bold text-primary mb-4 px-2">기록 관리</h3>
                                 <Link 
                                     href={`/write?edit=${id}`}
-                                    className="w-full flex items-center gap-4 bg-[#fdf8f5] px-5 py-4 rounded-2xl text-[#34322f] transition-colors border border-surface-variant/20 hover:border-primary/30"
+                                    className={`w-full flex items-center gap-4 bg-[#fdf8f5] px-5 py-4 rounded-2xl text-[#34322f] transition-colors border border-surface-variant/20 hover:border-primary/30 ${memory.user_id !== user.id ? 'hidden' : ''}`}
                                 >
                                     <span className="material-symbols-outlined text-[#a68a64]">edit</span>
                                     <span className="font-label font-bold text-sm">기록 수정하기</span>
                                 </Link>
                                 <button 
                                     onClick={handleDelete}
-                                    disabled={isDeleting}
-                                    className="w-full flex items-center gap-4 bg-[#fff0eb] px-5 py-4 rounded-2xl text-[#a73b21] transition-colors border border-[#fd795a]/20 hover:border-[#fd795a]/50"
+                                    disabled={isDeleting || memory.user_id !== user.id}
+                                    className={`w-full flex items-center gap-4 bg-[#fff0eb] px-5 py-4 rounded-2xl text-[#a73b21] transition-colors border border-[#fd795a]/20 hover:border-[#fd795a]/50 ${memory.user_id !== user.id ? 'opacity-30 cursor-not-allowed' : ''}`}
                                 >
                                     <span className="material-symbols-outlined text-[#a73b21]">delete</span>
                                     <span className="font-label font-bold text-sm">

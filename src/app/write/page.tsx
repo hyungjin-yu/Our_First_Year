@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect, Suspense } from "react";
+import { useState, useRef, useEffect, useMemo, Suspense } from "react";
 import { PremiumModal } from "@/components/premium-modal";
 import { TopAppBar } from "@/components/top-app-bar";
 import { BottomNav } from "@/components/bottom-nav";
@@ -8,17 +8,17 @@ import { useAuth } from "@/components/auth-provider";
 import { useRouter, useSearchParams } from "next/navigation";
 import { uploadToSupabase } from "@/utils/supabase/storage";
 import { createClient } from "@/utils/supabase/client";
+import { LoadingScreen } from "@/components/loading-screen";
 
 function WriteFormContent() {
     const { user, loading } = useAuth();
     const router = useRouter();
     const searchParams = useSearchParams();
     const editId = searchParams.get("edit");
-    const supabase = createClient();
+    const supabase = useMemo(() => createClient(), []);
 
     const [uploading, setUploading] = useState(false);
     const [message, setMessage] = useState("");
-    const [currentLetter, setCurrentLetter] = useState("");
     const [isPremiumOpen, setIsPremiumOpen] = useState(false);
     const [photoCount, setPhotoCount] = useState(0);
     const formRef = useRef<HTMLFormElement>(null);
@@ -54,21 +54,6 @@ function WriteFormContent() {
                 }
             }
 
-            // 편지 가져오기
-            const { data: letterData } = await supabase
-                .from("letters")
-                .select("content")
-                .eq("user_id", user.id)
-                .order("updated_at", { ascending: false })
-                .limit(1)
-                .single();
-                
-            if (letterData) {
-                setCurrentLetter(letterData.content);
-            } else {
-                setCurrentLetter("사랑하는 우리에게...\n여기에 편지를 남겨보세요.");
-            }
-
             // 사진 개수 가져오기
             if (!editId) {
                 const { count } = await supabase
@@ -81,7 +66,7 @@ function WriteFormContent() {
         };
 
         fetchInitialData();
-    }, [user, loading, router, supabase, editId]);
+    }, [user, loading, router, editId]);
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -143,6 +128,7 @@ function WriteFormContent() {
         }
     };
 
+    // #2 수정: delete→insert 방식은 데이터 손실 위험이 있어 upsert로 교체
     const handleLetterUpdate = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         if (!user) return;
@@ -150,24 +136,21 @@ function WriteFormContent() {
         const formData = new FormData(e.currentTarget);
         const content = formData.get("content") as string;
 
-        // 기존 편지 삭제 후 새로 추가 (간단한 우회 방법)
-        await supabase.from("letters").delete().eq("user_id", user.id);
-        const { error } = await supabase.from("letters").insert({
-            user_id: user.id,
-            content: content
-        });
+        const { error } = await supabase.from("letters").upsert(
+            { user_id: user.id, content },
+            { onConflict: "user_id" }
+        );
 
         if (error) {
             alert("편지 저장 중 오류가 발생했습니다.");
             console.error(error);
         } else {
-            setCurrentLetter(content);
             alert("편지가 성공적으로 저장되었습니다! 💌");
         }
     };
 
     if (loading || !user) {
-        return <div className="min-h-screen flex items-center justify-center bg-surface font-body text-on-surface">불러오는 중...</div>;
+        return <LoadingScreen />;
     }
 
     return (
@@ -262,29 +245,6 @@ function WriteFormContent() {
                         </button>
 
                         {message && <p className="text-center text-sm text-secondary font-label font-medium mt-2">{message}</p>}
-                    </form>
-                </section>
-
-                {/* Edit Letter Section */}
-                <section className="bg-surface-container-low p-6 rounded-tr-xl rounded-bl-xl rounded-tl-sm rounded-br-sm shadow-[0_10px_40px_0_rgba(52,50,47,0.06)] h-full flex flex-col">
-                    <h2 className="text-2xl font-headline font-bold mb-6 text-on-surface flex items-center gap-2">
-                        <span className="material-symbols-outlined text-primary/40">edit_note</span>
-                        편지 쓰기
-                    </h2>
-                    <form onSubmit={handleLetterUpdate} className="flex-1 flex flex-col space-y-4">
-                        <textarea
-                            name="content"
-                            className="flex-1 min-h-[300px] p-6 rounded-lg bg-surface-container-highest focus:bg-surface-container-lowest focus:ring-0 focus:outline-none focus:shadow-[0_0_0_1px_rgba(181,177,173,0.15)] transition-all font-headline text-lg leading-relaxed text-on-surface"
-                            value={currentLetter}
-                            onChange={(e) => setCurrentLetter(e.target.value)}
-                            placeholder="이곳에 편지를 써주세요. 저장된 편지는 편지 보관함에서 확인할 수 있습니다."
-                        ></textarea>
-                        <button
-                            type="submit"
-                            className="w-full py-4 bg-secondary-container text-on-secondary-container rounded-full font-label font-bold tracking-wide shadow-[0_10px_40px_0_rgba(52,50,47,0.06)] hover:bg-secondary-fixed transition-colors active:scale-95"
-                        >
-                            편지 저장 💌
-                        </button>
                     </form>
                 </section>
             </div>

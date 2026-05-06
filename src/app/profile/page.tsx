@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { TopAppBar } from "@/components/top-app-bar";
 import { BottomNav } from "@/components/bottom-nav";
 import { useAuth } from "@/components/auth-provider";
@@ -8,10 +8,11 @@ import { createClient } from "@/utils/supabase/client";
 import { uploadToSupabase } from "@/utils/supabase/storage";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
+import { LoadingScreen } from "@/components/loading-screen";
 
 export default function ProfilePage() {
     const { user, loading } = useAuth();
-    const supabase = createClient();
+    const supabase = useMemo(() => createClient(), []);
     const router = useRouter();
 
     const [fullName, setFullName] = useState("");
@@ -44,7 +45,7 @@ export default function ProfilePage() {
         };
 
         fetchProfile();
-    }, [user, loading, supabase, router]);
+    }, [user, loading, router]);
 
     const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
@@ -89,7 +90,7 @@ export default function ProfilePage() {
     };
 
     if (loading || !user) {
-        return <div className="min-h-screen flex items-center justify-center bg-surface text-on-surface">불러오는 중...</div>;
+        return <LoadingScreen />;
     }
 
     return (

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { TopAppBar } from "@/components/top-app-bar";
 import { BottomNav } from "@/components/bottom-nav";
 import { useAuth } from "@/components/auth-provider";
@@ -8,10 +8,12 @@ import { createClient } from "@/utils/supabase/client";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { motion } from "framer-motion";
+import { LoadingScreen } from "@/components/loading-screen";
+import { formatShortDate } from "@/lib/utils";
 
 export default function GalleryPage() {
     const { user, loading } = useAuth();
-    const supabase = createClient();
+    const supabase = useMemo(() => createClient(), []);
     const router = useRouter();
     const [memories, setMemories] = useState<any[]>([]);
     const [activeFilter, setActiveFilter] = useState("모두 보기");
@@ -38,19 +40,12 @@ export default function GalleryPage() {
         };
 
         fetchMemories();
-    }, [user, loading, supabase, router]);
+    }, [user, loading, router]);
 
     const filters = ["모두 보기", "2024년", "2023년 봄", "기념일", "여행"];
 
-    const formatDate = (dateString: string) => {
-        const date = new Date(dateString);
-        const mm = String(date.getMonth() + 1).padStart(2, "0");
-        const dd = String(date.getDate()).padStart(2, "0");
-        return `${mm}.${dd}`;
-    };
-
     if (loading || !user) {
-        return <div className="min-h-screen flex items-center justify-center bg-surface text-on-surface">불러오는 중...</div>;
+        return <LoadingScreen />;
     }
 
     return (
@@ -110,7 +105,7 @@ export default function GalleryPage() {
                                             <div className="px-2">
                                                 <div className="flex justify-between items-center mb-2">
                                                     <h3 className="font-headline text-xl font-bold text-primary truncate pr-4">{memory.title}</h3>
-                                                    <span className="font-label text-sm font-bold text-secondary shrink-0 bg-secondary-container/50 px-3 py-1 rounded-full">{formatDate(memory.memory_date)}</span>
+                                                    <span className="font-label text-sm font-bold text-secondary shrink-0 bg-secondary-container/50 px-3 py-1 rounded-full">{formatShortDate(memory.memory_date)}</span>
                                                 </div>
                                                 <p className="font-body text-sm text-on-surface-variant line-clamp-2">
                                                     {memory.description}

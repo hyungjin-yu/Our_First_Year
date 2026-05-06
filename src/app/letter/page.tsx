@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { TopAppBar } from "@/components/top-app-bar";
 import { BottomNav } from "@/components/bottom-nav";
 import { useAuth } from "@/components/auth-provider";
@@ -8,10 +8,12 @@ import { createClient } from "@/utils/supabase/client";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { motion } from "framer-motion";
+import { LoadingScreen } from "@/components/loading-screen";
+import { formatLetterDate } from "@/lib/utils";
 
 export default function LetterArchivePage() {
     const { user, loading } = useAuth();
-    const supabase = createClient();
+    const supabase = useMemo(() => createClient(), []);
     const router = useRouter();
     const [letters, setLetters] = useState<any[]>([]);
     const [searchQuery, setSearchQuery] = useState("");
@@ -38,19 +40,14 @@ export default function LetterArchivePage() {
         };
 
         fetchLetters();
-    }, [user, loading, supabase, router]);
+    }, [user, loading, router]);
 
     const filteredLetters = letters.filter(letter => 
         letter.content.toLowerCase().includes(searchQuery.toLowerCase())
     );
 
-    const formatDate = (dateString: string) => {
-        const date = new Date(dateString);
-        return `${date.getFullYear()}.${String(date.getMonth() + 1).padStart(2, "0")}.${String(date.getDate()).padStart(2, "0")}`;
-    };
-
     if (loading || !user) {
-        return <div className="min-h-screen flex items-center justify-center bg-surface text-on-surface">불러오는 중...</div>;
+        return <LoadingScreen />;
     }
 
     return (
@@ -110,7 +107,7 @@ export default function LetterArchivePage() {
                                                     {letter.profiles?.full_name || "My Love"}
                                                 </span>
                                                 <span className="font-label text-xs text-on-surface-variant ml-auto">
-                                                    {formatDate(letter.created_at)}
+                                                    {formatLetterDate(letter.created_at)}
                                                 </span>
                                             </div>
                                             <p className="font-body text-sm text-on-surface-variant leading-relaxed line-clamp-3">

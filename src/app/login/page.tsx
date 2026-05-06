@@ -29,6 +29,10 @@ export default function LoginPage() {
     };
 
     const handleSignUp = async () => {
+        if (!email || !password) {
+            alert("이메일과 비밀번호를 모두 입력해주세요.");
+            return;
+        }
         setLoading(true);
         const { error } = await supabase.auth.signUp({
             email,

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Android 11 이하(구버전) 기기를 위한 백업 규칙. data_extraction_rules.xml과
+  동일하게 전체 제외 — allowBackup="false"로 이미 막혀 있지만 이중 안전장치.
+-->
+<full-backup-content>
+    <exclude domain="root" />
+</full-backup-content>

@@ -46,18 +46,6 @@ export function PremiumModal({ isOpen, onClose }: PremiumModalProps) {
                                 <CheckIcon />
                                 <span className="text-gray-700">사진 업로드 <strong>무제한</strong></span>
                             </li>
-                            <li className="flex items-center gap-3">
-                                <CheckIcon />
-                                <span className="text-gray-700"><strong>다크 모드</strong> & 핑크 테마</span>
-                            </li>
-                            <li className="flex items-center gap-3">
-                                <CheckIcon />
-                                <span className="text-gray-700">편지 <strong>배경음악</strong> 설정</span>
-                            </li>
-                            <li className="flex items-center gap-3">
-                                <CheckIcon />
-                                <span className="text-gray-700">광고 제거</span>
-                            </li>
                         </ul>
 
                         <button className="w-full py-4 bg-gradient-to-r from-secondary to-secondary-light text-white rounded-xl font-bold shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-1 active:scale-95">

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Android 12+ 백업/전송 대상에서 앱 데이터를 완전히 제외한다.
+  (커플의 사진/일기/편지 같은 민감한 데이터가 기기 백업이나 기기 이전에
+  자동으로 포함되지 않도록 하기 위함 — Google Play 정책 권장사항)
+-->
+<data-extraction-rules>
+    <cloud-backup disableIfNoEncryptionCapability="false">
+        <exclude domain="root" />
+    </cloud-backup>
+    <device-transfer>
+        <exclude domain="root" />
+    </device-transfer>
+</data-extraction-rules>

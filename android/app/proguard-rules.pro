@@ -19,3 +19,19 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+
+# --- Capacitor / WebView bridge ---
+# Capacitor 플러그인은 리플렉션으로 호출되므로 minify/shrink 시 제거되면 안 됨.
+-keep class com.getcapacitor.** { *; }
+-keep class * extends com.getcapacitor.Plugin { *; }
+-keepclassmembers,allowobfuscation class * {
+    @com.getcapacitor.annotation.CapacitorPlugin <methods>;
+    @com.getcapacitor.PluginMethod <methods>;
+}
+-keepattributes *Annotation*, JavascriptInterface
+
+# Capacitor 코르도바 호환 플러그인이 내부적으로 쓰는 네트워크 라이브러리
+-dontwarn okhttp3.**
+-dontwarn okio.**
+-keep class okhttp3.** { *; }
+-keep interface okhttp3.** { *; }

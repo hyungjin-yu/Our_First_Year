@@ -36,6 +36,11 @@ yarn-error.log*
 # vercel
 .vercel
 
+# android release signing (절대 커밋 금지)
+android/keystore.properties
+*.keystore
+*.jks
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts

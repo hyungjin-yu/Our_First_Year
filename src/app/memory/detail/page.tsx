@@ -9,6 +9,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { LoadingScreen } from "@/components/loading-screen";
+import { SignedImage } from "@/components/signed-image";
 import { formatFullDate } from "@/lib/utils";
 
 function MemoryDetailContent() {
@@ -86,7 +87,12 @@ function MemoryDetailContent() {
                     {/* Image */}
                     {memory.image_url && (
                         <div className="w-full h-80 md:h-[28rem] rounded-[2rem] overflow-hidden bg-surface-container-high mb-8 shadow-md">
-                            <img src={memory.image_url} alt={memory.title} className="w-full h-full object-cover" />
+                            <SignedImage
+                                path={memory.image_url}
+                                alt={memory.title}
+                                className="w-full h-full object-cover"
+                                fallback={<div className="w-full h-full animate-pulse" />}
+                            />
                         </div>
                     )}
 

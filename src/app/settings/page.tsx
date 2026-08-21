@@ -27,6 +27,11 @@ export default function SettingsPage() {
     const [partnerCodeInput, setPartnerCodeInput] = useState("");
     const [isLinking, setIsLinking] = useState(false);
 
+    // Account Deletion States
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+    const [deleteConfirmText, setDeleteConfirmText] = useState("");
+    const [isDeletingAccount, setIsDeletingAccount] = useState(false);
+
     useEffect(() => { setPrimaryInput(primaryColor); }, [primaryColor]);
     useEffect(() => { setSurfaceInput(surfaceColor); }, [surfaceColor]);
 
@@ -87,6 +92,22 @@ export default function SettingsPage() {
         router.push("/login");
     };
 
+    const handleDeleteAccount = async () => {
+        if (deleteConfirmText !== "계정 삭제") return;
+        setIsDeletingAccount(true);
+        const { error } = await supabase.functions.invoke("delete-account");
+        setIsDeletingAccount(false);
+
+        if (error) {
+            alert(`계정 삭제에 실패했습니다: ${error.message}`);
+            return;
+        }
+
+        alert("계정과 모든 데이터가 영구적으로 삭제되었습니다.");
+        await supabase.auth.signOut();
+        router.push("/login");
+    };
+
     return (
         <>
             <TopAppBar />
@@ -131,6 +152,17 @@ export default function SettingsPage() {
                                 </button>
                             )}
                         </div>
+
+                        {user && (
+                            <div className="mt-4 pt-4 border-t border-surface-container-highest">
+                                <button
+                                    onClick={() => setIsDeleteModalOpen(true)}
+                                    className="w-full py-3 text-error/70 text-sm font-label hover:text-error hover:bg-error/5 rounded-lg transition-colors"
+                                >
+                                    계정 및 모든 데이터 영구 삭제
+                                </button>
+                            </div>
+                        )}
                     </section>
 
                     {/* Couple Connection Section */}
@@ -374,6 +406,49 @@ export default function SettingsPage() {
                     </section>
                 </div>
             </main>
+
+            {isDeleteModalOpen && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+                    <div
+                        onClick={() => !isDeletingAccount && setIsDeleteModalOpen(false)}
+                        className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+                    />
+                    <div className="relative z-10 bg-surface-container-lowest rounded-2xl p-6 max-w-sm w-full shadow-2xl">
+                        <h3 className="font-headline text-lg font-bold text-error mb-2">정말 계정을 삭제할까요?</h3>
+                        <p className="font-body text-sm text-on-surface-variant mb-4 leading-relaxed">
+                            내가 작성한 모든 추억, 편지, 사진, 프로필 정보가 즉시 영구적으로 삭제되며 되돌릴 수 없습니다.
+                            상대방과의 연결도 해제됩니다.
+                        </p>
+                        <p className="font-body text-sm text-on-surface-variant mb-2">
+                            계속하려면 아래에 <strong className="text-on-surface">계정 삭제</strong>라고 입력하세요.
+                        </p>
+                        <input
+                            type="text"
+                            value={deleteConfirmText}
+                            onChange={(e) => setDeleteConfirmText(e.target.value)}
+                            placeholder="계정 삭제"
+                            className="w-full px-4 py-3 rounded-lg bg-surface-container border border-surface-container-highest font-body text-sm focus:outline-none focus:ring-2 focus:ring-error/30 mb-4"
+                        />
+                        <div className="flex gap-3">
+                            <button
+                                onClick={() => { setIsDeleteModalOpen(false); setDeleteConfirmText(""); }}
+                                disabled={isDeletingAccount}
+                                className="flex-1 py-3 bg-surface-container-high text-on-surface rounded-lg font-label font-bold hover:bg-surface-container-highest transition-colors disabled:opacity-50"
+                            >
+                                취소
+                            </button>
+                            <button
+                                onClick={handleDeleteAccount}
+                                disabled={deleteConfirmText !== "계정 삭제" || isDeletingAccount}
+                                className="flex-1 py-3 bg-error text-white rounded-lg font-label font-bold hover:bg-error/90 transition-colors disabled:opacity-40"
+                            >
+                                {isDeletingAccount ? "삭제 중..." : "영구 삭제"}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
             <BottomNav />
         </>
     );

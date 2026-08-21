@@ -2,9 +2,16 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
+import { Capacitor } from "@capacitor/core";
 import { createClient } from "@/utils/supabase/client";
 import { useRouter } from "next/navigation";
 import { TopAppBar } from "@/components/top-app-bar";
+
+// 네이티브 앱(Android/iOS)에서는 OAuth 로그인 후 앱으로 돌아오도록 커스텀 스킴으로
+// 리다이렉트해야 한다. 웹에서는 undefined로 두어 Supabase 기본(Site URL) 동작을 그대로 쓴다.
+const OAUTH_REDIRECT_URL = Capacitor.isNativePlatform()
+    ? "com.our.anniversary://auth/callback"
+    : undefined;
 
 export default function LoginPage() {
     const [email, setEmail] = useState("");
@@ -113,14 +120,14 @@ export default function LoginPage() {
                         <div className="flex gap-4">
                             <button
                                 type="button"
-                                onClick={() => supabase.auth.signInWithOAuth({ provider: 'kakao' })}
+                                onClick={() => supabase.auth.signInWithOAuth({ provider: 'kakao', options: { redirectTo: OAUTH_REDIRECT_URL } })}
                                 className="flex-1 py-3 bg-[#FEE500] text-[#000000] rounded-lg font-label font-bold hover:bg-[#E6CF00] transition-colors flex items-center justify-center gap-2 shadow-sm"
                             >
                                 카카오
                             </button>
                             <button
                                 type="button"
-                                onClick={() => supabase.auth.signInWithOAuth({ provider: 'google' })}
+                                onClick={() => supabase.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: OAUTH_REDIRECT_URL } })}
                                 className="flex-1 py-3 bg-white text-gray-700 rounded-lg font-label font-bold hover:bg-gray-50 transition-colors flex items-center justify-center gap-2 shadow-[0_0_0_1px_rgba(181,177,173,0.3)]"
                             >
                                 구글

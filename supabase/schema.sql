@@ -1,3 +1,7 @@
+-- ⚠️ 이 파일은 초기 설계(couple_id/couples 테이블) 기준이라 실제 운영 스키마와
+-- 다릅니다. 실제 앱은 profiles.partner_id 기반이며 couples 테이블을 쓰지 않습니다.
+-- RLS 정책/RPC는 supabase/migrations/20260821_launch_readiness.sql을 기준으로 보세요.
+
 -- Create profiles table
 create table public.profiles (
   id uuid references auth.users not null primary key,

@@ -9,6 +9,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { LoadingScreen } from "@/components/loading-screen";
+import { SignedImage } from "@/components/signed-image";
 import { formatShortDate } from "@/lib/utils";
 
 export default function GalleryPage() {
@@ -95,7 +96,12 @@ export default function GalleryPage() {
                                         <div className="bg-surface-container-lowest rounded-[2rem] p-4 shadow-[0_10px_40px_0_rgba(52,50,47,0.06)] transition-transform group-hover:scale-[1.02]">
                                             <div className="w-full h-72 md:h-96 rounded-[1.5rem] overflow-hidden bg-surface-container-high mb-4 relative">
                                                 {memory.image_url ? (
-                                                    <img src={memory.image_url} alt={memory.title} className="w-full h-full object-cover" />
+                                                    <SignedImage
+                                                        path={memory.image_url}
+                                                        alt={memory.title}
+                                                        className="w-full h-full object-cover"
+                                                        fallback={<div className="w-full h-full animate-pulse bg-surface-container-high" />}
+                                                    />
                                                 ) : (
                                                     <div className="w-full h-full flex items-center justify-center">
                                                         <span className="material-symbols-outlined text-4xl text-primary-dim opacity-50">image</span>

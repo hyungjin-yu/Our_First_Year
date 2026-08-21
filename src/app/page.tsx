@@ -7,6 +7,7 @@ import { createClient } from "@/utils/supabase/client";
 import { useAuth } from "@/components/auth-provider";
 import Link from "next/link";
 import { PremiumModal } from "@/components/premium-modal";
+import { SignedImage } from "@/components/signed-image";
 
 export default function Home() {
   const { user } = useAuth();
@@ -83,10 +84,11 @@ export default function Home() {
         <section className="relative rounded-3xl overflow-hidden min-h-[440px] flex flex-col justify-end p-6 shadow-[0_20px_60px_rgba(0,0,0,0.15)]">
           <div className="absolute inset-0 z-0 bg-surface-container-high">
             {bgMemory?.image_url ? (
-              <img 
-                alt="background memory" 
-                className="w-full h-full object-cover object-center scale-105" 
-                src={bgMemory.image_url}
+              <SignedImage
+                path={bgMemory.image_url}
+                alt="background memory"
+                className="w-full h-full object-cover object-center scale-105"
+                fallback={<div className="w-full h-full bg-surface-container-high" />}
               />
             ) : (
               <div className="w-full h-full bg-gradient-to-br from-[#f8e5e5] to-[#e6d0d0]"></div>
@@ -166,10 +168,11 @@ export default function Home() {
                   <article className="bg-surface-container-lowest p-4 rounded-2xl shadow-[0_10px_40px_0_rgba(52,50,47,0.06)] transform rotate-1 group-hover:rotate-0 group-hover:scale-[1.02] transition-all duration-300">
                     <div className="aspect-[4/5] w-full overflow-hidden rounded-xl mb-4 bg-surface-container-high flex flex-col items-center justify-center relative">
                       {randomMemory.image_url ? (
-                        <img 
-                          alt="memory fragment" 
-                          className="w-full h-full object-cover" 
-                          src={randomMemory.image_url}
+                        <SignedImage
+                          path={randomMemory.image_url}
+                          alt="memory fragment"
+                          className="w-full h-full object-cover"
+                          fallback={<div className="w-full h-full animate-pulse bg-surface-container-high" />}
                         />
                       ) : (
                         <>

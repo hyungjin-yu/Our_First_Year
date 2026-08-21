@@ -2,16 +2,9 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Capacitor } from "@capacitor/core";
 import { createClient } from "@/utils/supabase/client";
 import { useRouter } from "next/navigation";
 import { TopAppBar } from "@/components/top-app-bar";
-
-// 네이티브 앱(Android/iOS)에서는 OAuth 로그인 후 앱으로 돌아오도록 커스텀 스킴으로
-// 리다이렉트해야 한다. 웹에서는 undefined로 두어 Supabase 기본(Site URL) 동작을 그대로 쓴다.
-const OAUTH_REDIRECT_URL = Capacitor.isNativePlatform()
-    ? "com.our.anniversary://auth/callback"
-    : undefined;
 
 export default function LoginPage() {
     const [email, setEmail] = useState("");
@@ -109,30 +102,9 @@ export default function LoginPage() {
                         >
                             회원가입
                         </button>
-
-                        <div className="flex items-center my-4">
-                            <div className="flex-grow border-t border-surface-container-highest dark:border-surface-variant/20"></div>
-                            <span className="px-4 text-xs font-label text-on-surface-variant">또는</span>
-                            <div className="flex-grow border-t border-surface-container-highest dark:border-surface-variant/20"></div>
-                        </div>
-
-                        {/* Social Login */}
-                        <div className="flex gap-4">
-                            <button
-                                type="button"
-                                onClick={() => supabase.auth.signInWithOAuth({ provider: 'kakao', options: { redirectTo: OAUTH_REDIRECT_URL } })}
-                                className="flex-1 py-3 bg-[#FEE500] text-[#000000] rounded-lg font-label font-bold hover:bg-[#E6CF00] transition-colors flex items-center justify-center gap-2 shadow-sm"
-                            >
-                                카카오
-                            </button>
-                            <button
-                                type="button"
-                                onClick={() => supabase.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: OAUTH_REDIRECT_URL } })}
-                                className="flex-1 py-3 bg-white text-gray-700 rounded-lg font-label font-bold hover:bg-gray-50 transition-colors flex items-center justify-center gap-2 shadow-[0_0_0_1px_rgba(181,177,173,0.3)]"
-                            >
-                                구글
-                            </button>
-                        </div>
+                        {/* 카카오/구글 소셜 로그인은 Supabase에서 아직 활성화되지 않아 이번 출시에서는 숨김.
+                            나중에 Kakao/Google OAuth 앱을 만들고 Supabase Authentication → Sign In / Providers에서
+                            켜면, 아래 버튼(및 auth-provider.tsx의 딥링크 처리)을 다시 추가하면 된다. */}
                     </div>
                 </motion.div>
             </div>

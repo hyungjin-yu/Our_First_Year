@@ -44,3 +44,8 @@ android/keystore.properties
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# graphify - keep the graph/report outputs, drop local machine state & cache
+graphify-out/cache/
+graphify-out/.graphify_python
+graphify-out/.graphify_root

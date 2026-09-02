@@ -4,6 +4,13 @@ Play Store / App Store 정식 출시까지 남은 작업 정리. 항목 처리�
 
 마지막 업데이트: 2026-09-02
 
+**참고:** 로컬 빌드 환경 세팅 메모 (다음에 새 기기에서 빌드할 때 참고)
+- `.env.local` 필요 (Supabase URL/anon key, `.gitignore`됨 — Supabase 대시보드에서 재발급 가능)
+- `android/local.properties`에 `sdk.dir` 필요 (Android SDK 경로)
+- `android/keystore.properties` + `android/release.keystore` 필요 (백업 위치 확인!)
+- Capacitor 안드로이드 모듈이 **Java 21**을 요구함 — 이 컴퓨터엔 JDK 17만 깔려있어서, Android Studio 번들 JBR(`C:\Program Files\Android\Android Studio\jbr`, JDK 25)을 `JAVA_HOME`으로 써서 빌드함
+- 서명된 AAB: `npx cap sync android` 후 `android/` 에서 `./gradlew bundleRelease` → `android/app/build/outputs/bundle/release/app-release.aab`
+
 ## Phase A — 보안/정책 필수 (완료)
 
 - [x] Storage 비공개 전환 (`getPublicUrl` → signed URL, `memories` 버킷 Private)
@@ -21,7 +28,7 @@ Play Store / App Store 정식 출시까지 남은 작업 정리. 항목 처리�
 ## 오늘/다음 할 것
 
 - [x] **Google Play Console 개발자 등록** ($25, 1회, 본인인증 포함 완료) → https://play.google.com/console/signup
-- [ ] `npx cap sync android` → Android Studio에서 서명된 AAB 빌드
+- [x] `npx cap sync android` → 서명된 AAB 빌드 (`android/app/build/outputs/bundle/release/app-release.aab`)
 - [ ] Play Console에 앱 생성 → Data Safety 항목 작성 (개인정보처리방침 URL 위 링크 사용) → 첫 빌드 업로드 (내부 테스트 트랙 추천)
 - [ ] (선택) 중복 RLS 정책 정리 — 예전에 대시보드에서 직접 만든 정책과 오늘 마이그레이션이 겹쳐있음. 기능상 문제는 없으나 정리하면 깔끔함.
 

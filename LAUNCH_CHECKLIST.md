@@ -2,7 +2,7 @@
 
 Play Store / App Store 정식 출시까지 남은 작업 정리. 항목 처리될 때마다 업데이트할 것.
 
-마지막 업데이트: 2026-08-21
+마지막 업데이트: 2026-09-02
 
 ## Phase A — 보안/정책 필수 (완료)
 
@@ -20,7 +20,7 @@ Play Store / App Store 정식 출시까지 남은 작업 정리. 항목 처리�
 
 ## 오늘/다음 할 것
 
-- [ ] **Google Play Console 개발자 등록** ($25, 1회) → https://play.google.com/console/signup
+- [x] **Google Play Console 개발자 등록** ($25, 1회, 본인인증 포함 완료) → https://play.google.com/console/signup
 - [ ] `npx cap sync android` → Android Studio에서 서명된 AAB 빌드
 - [ ] Play Console에 앱 생성 → Data Safety 항목 작성 (개인정보처리방침 URL 위 링크 사용) → 첫 빌드 업로드 (내부 테스트 트랙 추천)
 - [ ] (선택) 중복 RLS 정책 정리 — 예전에 대시보드에서 직접 만든 정책과 오늘 마이그레이션이 겹쳐있음. 기능상 문제는 없으나 정리하면 깔끔함.
